@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "914801358372",
+    "project_id": "gipchat-660cb",
+    "storage_bucket": "gipchat-660cb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:914801358372:android:e78b6377e9f8642b36cab1",
+        "android_client_info": {
+          "package_name": "baez.code.Gip_chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "914801358372-a0i50b3u4mqj2mq3e7vn872p3edpuper.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-Qsfw7_HdL9FAzx1PFjZjWBapuwxSM_c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "914801358372-a0i50b3u4mqj2mq3e7vn872p3edpuper.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
