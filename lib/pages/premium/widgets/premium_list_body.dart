@@ -1,6 +1,6 @@
 import 'package:chat_gpt/bloc/pagos/pagos_bloc.dart';
+import 'package:chat_gpt/models/token_model.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
@@ -12,9 +12,25 @@ class PremiumListBody extends StatefulWidget {
 }
 
 class _PremiumListBodyState extends State<PremiumListBody> {
-  double tokens = 5000;
   var formatter = NumberFormat('###,###,000');
   late PagosBloc pagosBloc;
+  final List<TokenModel> lista = [
+    TokenModel(
+        titulo: '25.000 Tokens',
+        tokens: 25000,
+        value: '3.99',
+        keyData: 'tokens_ap_5'),
+    TokenModel(
+        titulo: '50.000 Tokens',
+        tokens: 50000,
+        value: '6.99',
+        keyData: 'tokens_ap_10'),
+    TokenModel(
+        titulo: '100.000 Tokens',
+        tokens: 1000000,
+        value: '11.99',
+        keyData: 'tokens_ap_15')
+  ];
 
   @override
   void initState() {
@@ -24,110 +40,55 @@ class _PremiumListBodyState extends State<PremiumListBody> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocBuilder<PagosBloc, PagosState>(
+      builder: (context, state) {
+        return SingleChildScrollView(
+          child: ListView.builder(
+              shrinkWrap: true,
+              itemCount: lista.length,
+              itemBuilder: (ctx, i) => _header(lista[i], state.idCompra)),
+        );
+      },
+    );
+  }
+
+  Widget _header(TokenModel tokenModel, String keydata) {
     return Padding(
-      padding: const EdgeInsets.all(15.0),
-      child: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: Colors.black54,
-          ),
-          child: BlocBuilder<PagosBloc, PagosState>(
-            builder: (context, state) {
-              return Column(
-                children: [
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  _header(),
-                  _logicaInput(),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Text(
-                        "Obtendras:",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      Text(
-                        formatter.format(state.tokensAComprar),
-                        style: const TextStyle(color: Colors.white),
-                      ),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      const Text(
-                        "Tokens",
-                        style: TextStyle(color: Colors.white),
-                      )
-                    ],
-                  ),
-                  const SizedBox(
-                    height: 25,
-                  ),
-                ],
-              );
-            },
-          )),
-    );
-  }
-
-  Widget _header() {
-    return SizedBox(
-      width: 150,
-      height: 50,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: const [
-          Text(
-            'Tokens',
-            style: TextStyle(
-                color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Text(
-            '5.000 Tokens = 1\$',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          Spacer(),
-        ],
-      ),
-    );
-  }
-
-  Widget _logicaInput() {
-    return SizedBox(
-      width: 250,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: TextFormField(
-          initialValue: '1',
-          inputFormatters: [
-            FilteringTextInputFormatter.digitsOnly,
-            FilteringTextInputFormatter.deny(RegExp('^0+'))
-          ],
-          style: TextStyle(color: Colors.white),
-          cursorColor: Colors.white,
-          decoration:
-              inputCustomDecoration('Cantidad', Icons.attach_money_outlined),
-          keyboardType: TextInputType.number,
-          onChanged: (value) {
-            if (value.isNotEmpty) {
-              final data = double.parse(value);
-
-              final totalTokes = data.round() * tokens;
-              pagosBloc.add(SetCompra(totalTokes, value));
-            } else {
-              pagosBloc.add(SetCompra(0, ''));
-            }
-          },
-        ),
+      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+      child: GestureDetector(
+        onTap: () =>
+            pagosBloc.add(SetCompra(tokenModel.tokens, tokenModel.keyData)),
+        child: Container(
+            height: 70,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: Colors.black38,
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Icon(
+                  keydata == tokenModel.keyData
+                      ? Icons.circle_rounded
+                      : Icons.circle_outlined,
+                  color: Colors.blue[700],
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  tokenModel.titulo,
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                const SizedBox(
+                  width: 10,
+                ),
+                Text(
+                  "${tokenModel.value} \$",
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                )
+              ],
+            )),
       ),
     );
   }

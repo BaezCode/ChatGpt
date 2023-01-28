@@ -3,6 +3,8 @@ import 'package:chat_gpt/shared/preferencias_usuario.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
+import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
 
 class CustomWidgets {
   CustomWidgets._();
@@ -10,6 +12,8 @@ class CustomWidgets {
   static buildSliderRange(BuildContext context) {
     final prefs = PreferenciasUsuario();
     double limite = prefs.limiteToken;
+    final resp = AppLocalizations.of(context)!;
+
     showModalBottomSheet(
         backgroundColor: const Color(0xff424549),
         shape: const RoundedRectangleBorder(
@@ -27,7 +31,7 @@ class CustomWidgets {
                       child: Row(
                         children: [
                           Text(
-                            "  Limite de uso de Tokens: ${prefs.limiteToken.toInt()}",
+                            "  ${resp.tokenLimit}: ${prefs.limiteToken.toInt()}",
                             style: const TextStyle(
                                 color: Colors.white, fontSize: 15),
                           ),
@@ -45,10 +49,10 @@ class CustomWidgets {
                         ],
                       ),
                     ),
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.all(10.0),
                       child: Text(
-                        'Aqui puedes Establecer el Limite Maximo de uso Tokens por respuesta que pueden ser Utilizados en cada Respuesta',
+                        resp.tokenLimitDescrp,
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
@@ -68,26 +72,28 @@ class CustomWidgets {
                         },
                       ),
                     ),
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.all(10.0),
                       child: Text(
-                        'El modelo se mueve a través de Tokens por la cual 1 Token equivalen a 5 Caracteres de respuesta Escrita por el Robot, cuando más tokens tenga configurado, más compleja y detallada será la respuesta dada por el modelo ,cuanto menos tokens tenga configurado más corta será la respuesta',
+                        resp.tokenLimitDescrp2,
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    MaterialButton(
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        color: const Color(0xff21232A),
-                        child: const Text(
-                          'Confirmar',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                        onPressed: () {
-                          Fluttertoast.showToast(msg: 'Alterado Correctamente');
-                          Navigator.pop(context);
-                          prefs.limiteToken = limite;
-                        })
+                    SafeArea(
+                      child: MaterialButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          color: const Color(0xff21232A),
+                          child: Text(
+                            resp.confirm,
+                            style: TextStyle(color: Colors.white),
+                          ),
+                          onPressed: () {
+                            Fluttertoast.showToast(msg: 'Saved OK');
+                            Navigator.pop(context);
+                            prefs.limiteToken = limite;
+                          }),
+                    )
                   ],
                 ),
               );
@@ -112,6 +118,7 @@ class CustomWidgets {
   static crearBuildImage(BuildContext context) {
     final size = MediaQuery.of(context).size;
     final prefs = PreferenciasUsuario();
+    final resp = AppLocalizations.of(context)!;
 
     showModalBottomSheet(
         shape: const RoundedRectangleBorder(
@@ -123,7 +130,7 @@ class CustomWidgets {
         context: context,
         builder: (bc) {
           return SizedBox(
-            height: size.height * 0.60,
+            height: size.height * 0.80,
             child: SingleChildScrollView(
               child: Column(
                 children: [
@@ -143,11 +150,10 @@ class CustomWidgets {
                     height: 20,
                   ),
                   FadeIn(
-                    duration: const Duration(milliseconds: 1000),
-                    child: const Padding(
+                    duration: Duration(milliseconds: 1000),
+                    child: Padding(
                       padding: EdgeInsets.all(8.0),
-                      child: Text(
-                          'Crea imágenes y Arte realistas a Partir de una Descripción en Lenguaje Natural Escribe lo que Piensas y la Imagen sera Creada',
+                      child: Text(resp.imageInfo,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             fontSize: 15.0,
@@ -158,18 +164,20 @@ class CustomWidgets {
                   const SizedBox(
                     height: 20,
                   ),
-                  MaterialButton(
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10)),
-                      color: const Color(0xff424549),
-                      child: const Text(
-                        'Comenzar',
-                        style: TextStyle(color: Colors.white),
-                      ),
-                      onPressed: () {
-                        prefs.vistoImagen = true;
-                        Navigator.pop(context);
-                      })
+                  SafeArea(
+                    child: MaterialButton(
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                        color: const Color(0xff424549),
+                        child: Text(
+                          resp.start,
+                          style: TextStyle(color: Colors.white),
+                        ),
+                        onPressed: () {
+                          prefs.vistoImagen = true;
+                          Navigator.pop(context);
+                        }),
+                  )
                 ],
               ),
             ),
@@ -181,6 +189,7 @@ class CustomWidgets {
     final size = MediaQuery.of(context).size;
     final prefs = PreferenciasUsuario();
     double limite = prefs.limiteToken;
+    final resp = AppLocalizations.of(context)!;
 
     showModalBottomSheet(
         shape: const RoundedRectangleBorder(
@@ -203,15 +212,15 @@ class CustomWidgets {
                         height: 15,
                       ),
                       Text(
-                        "  Modelo GPT-3",
+                        "  ${resp.model}",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.blue[700]),
                       ),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
-                          "Puede entender y Generar Lenguaje Natural Puedes hacer preguntas complejas por la cual le dará una respuesta concreta gracias al potente motor Davinci ",
+                          resp.davinci,
                           style: TextStyle(color: Colors.white, fontSize: 13),
                         ),
                       ),
@@ -221,59 +230,53 @@ class CustomWidgets {
                             fontWeight: FontWeight.bold,
                             color: Colors.blue[700]),
                       ),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
-                          "El modelo se mueve a través de Tokens por la cual 1 Token equivalen a 5 Caracteres de respuesta de complejidad del modelo, cuando más tokens tenga configurado, más compleja y detallada será la respuesta dada por el modelo ,cuanto menos tokens tenga configurado más corta será la respuesta dada",
+                          resp.caracter,
                           style: TextStyle(color: Colors.white, fontSize: 13),
                         ),
                       ),
                       Text(
-                        "  ¿Como Adquirir Tokens?",
+                        "  ${resp.adTokens}",
                         style: TextStyle(
                             fontWeight: FontWeight.bold,
                             color: Colors.blue[700]),
                       ),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
-                          "Puedes adquirir Tokens gratuitamente viendo anuncios o de manera Paga de diferentes planos que tienes disponible en el aplicativo, esto nos ayuda a mantener el aplicativo en funcionamiento",
-                          style: TextStyle(color: Colors.white, fontSize: 13),
-                        ),
-                      ),
-                      Text(
-                        "  Tokenes Gratuitos!",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.blue[700]),
-                      ),
-                      const Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          "Como primera instalación del sistema tienes disponible 3.000 tókenes gratuitos para que puedas hacer sus primeras preguntas o genera sus primeras imágenes, Disfrútelo",
+                          resp.tokenCer,
                           style: TextStyle(color: Colors.white, fontSize: 13),
                         ),
                       ),
                       Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
-                          'Limitar Tokens',
+                          resp.freeTokens,
+                          style: TextStyle(color: Colors.white, fontSize: 13),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text(
+                          resp.limitTokens,
                           style: TextStyle(
                               color: Colors.blue[700],
                               fontWeight: FontWeight.bold),
                         ),
                       ),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
-                          'Aqui puedes Establecer el Limite Maximo de uso Tokens por respuesta que pueden ser Utilizados en cada Respuesta',
+                          resp.limitTokensDescripc,
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
                       const Padding(
                         padding: EdgeInsets.all(8.0),
                         child: Text(
-                          'Token: 100 (Recomendado) , Token: 200 (Respuesta Detallada)',
+                          'Token: 100 (Recomended) , Token: 200 (Detailed Answer)',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
@@ -293,10 +296,10 @@ class CustomWidgets {
                           },
                         ),
                       ),
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.all(10.0),
                         child: Text(
-                          'El modelo se mueve a través de Tokens por la cual 1 Token equivalen a 5 Caracteres de respuesta Escrita por el Robot, cuando más tokens tenga configurado, más compleja y detallada será la respuesta dada por el modelo ,cuanto menos tokens tenga configurado más corta será la respuesta',
+                          resp.finalDescrip,
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
@@ -308,9 +311,9 @@ class CustomWidgets {
                             shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(10)),
                             color: const Color(0xff424549),
-                            child: const Text(
-                              'Comenzar!',
-                              style: TextStyle(color: Colors.white),
+                            child: Text(
+                              resp.start,
+                              style: const TextStyle(color: Colors.white),
                             ),
                             onPressed: () {
                               prefs.vistoTexto = true;

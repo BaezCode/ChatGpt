@@ -17,7 +17,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 # In Windows, build-name is used as the major, minor, and patch parts
 # of the product and file versions while build-number is used as the build suffix.
-version: 1.0.0+1
+version: 1.0.2+2
 
 environment:
   sdk: '>=2.18.6 <3.0.0'
@@ -30,6 +30,8 @@ environment:
 # versions available, run `flutter pub outdated`.
 dependencies:
   flutter:
+    sdk: flutter
+  flutter_localizations:
     sdk: flutter
 
 
@@ -55,8 +57,10 @@ dependencies:
   google_mobile_ads: 
   flutter_masked_text2: ^0.9.1
   intl:
-  image_downloader: ^0.31.0
-  in_app_purchase: ^3.1.1
+  image_downloader: 
+  purchases_flutter: ^4.7.0
+  device_info_plus: ^8.0.0
+
 
 
 
@@ -103,19 +107,21 @@ flutter:
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in
   # the material Icons class.
+  generate: true
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
   assets:
       - assets/images/robot.json
       - assets/images/robot0.json
-      - assets/images/helmet.png
       - assets/images/astronaut.jpg
       - assets/images/loading.gif
       - assets/images/logo.png
       - assets/images/premium.json
       - assets/google_pay.json
       - assets/confirmado.json
+      - assets/fondo.png
+
 
 
       

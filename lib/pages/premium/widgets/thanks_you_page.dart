@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
 
 class ThanksYouPage extends StatelessWidget {
   const ThanksYouPage({super.key});
@@ -11,7 +12,7 @@ class ThanksYouPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var formatter = NumberFormat('###,###,000');
-    final loginbloc = BlocProvider.of<LoginBloc>(context);
+    final resp = AppLocalizations.of(context)!;
 
     return Scaffold(
       backgroundColor: const Color(0xff21232A),
@@ -22,20 +23,20 @@ class ThanksYouPage extends StatelessWidget {
               LottieBuilder.asset(
                   repeat: false, 'assets/images/confirmado.json'),
               Text(
-                "Pago Confirmado!",
-                style: TextStyle(
+                resp.pay1,
+                style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 22,
                     color: Colors.white),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 10,
               ),
               Text(
-                '${formatter.format(state.tokensAComprar)}, Tokens Adquiridos',
-                style: TextStyle(color: Colors.white),
+                '${formatter.format(state.tokensAComprar)}, ${resp.pay2}',
+                style: const TextStyle(color: Colors.white),
               ),
-              SizedBox(
+              const SizedBox(
                 height: 25,
               ),
               MaterialButton(
@@ -43,8 +44,8 @@ class ThanksYouPage extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10)),
                   color: Colors.black,
                   child: Text(
-                    "Continuar",
-                    style: TextStyle(color: Colors.white),
+                    resp.confirm,
+                    style: const TextStyle(color: Colors.white),
                   ),
                   onPressed: () =>
                       Navigator.pushReplacementNamed(context, 'chat'))

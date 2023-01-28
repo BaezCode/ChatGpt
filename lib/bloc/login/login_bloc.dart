@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:bloc/bloc.dart';
-import 'package:chat_gpt/bloc/chat/chat_bloc.dart';
 import 'package:chat_gpt/global/enviroment.dart';
 import 'package:chat_gpt/models/login_response.dart';
 import 'package:chat_gpt/models/usuario_model.dart';
@@ -35,60 +34,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     await storage.delete(key: 'token');
   }
 
-  //Login - Regitro
-  Future register(
-    String email,
-    String password,
-  ) async {
-    final data = {'email': email, 'password': password, 'idAssist': uid.v4()};
-    final uri = Uri.parse(
-      "${Environment.apiUrl}/login/new",
-    );
-    try {
-      final resp = await http.post(uri,
-          body: jsonEncode(data),
-          headers: {'Content-Type': 'application/json'});
-      if (resp.statusCode == 200) {
-        final loginResponse = loginResponseFromJson(resp.body);
-        usuario = loginResponse.usuario;
-        await guardarToken(loginResponse.token);
-        return true;
-      } else {
-        final respBody = jsonDecode(resp.body);
-        return respBody['msg'];
-      }
-    } catch (e) {
-      return e;
-    }
-  }
-
-  // login Normal
-
-  Future<bool> login(String email, String password) async {
-    final data = {
-      'email': email,
-      'password': password,
-    };
-    final uri = Uri.parse(
-      "${Environment.apiUrl}/login",
-    );
-    try {
-      final resp = await http.post(uri,
-          body: jsonEncode(data),
-          headers: {'Content-Type': 'application/json'});
-      if (resp.statusCode == 200) {
-        final loginResponse = loginResponseFromJson(resp.body);
-        usuario = loginResponse.usuario;
-        await guardarToken(loginResponse.token);
-        return true;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      return false;
-    }
-  }
-
   //Login Con Google
   Future<bool> loginGoogle() async {
     final uri = Uri.parse(
@@ -106,6 +51,32 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         final loginResponse = loginResponseFromJson(resp.body);
         usuario = loginResponse.usuario;
         await guardarToken(loginResponse.token);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Mantener logueado
+  Future<bool> deleteAccountApple() async {
+    final uri = Uri.parse(
+      "${Environment.apiUrl}/login/apple",
+    );
+    final data = {"refreshToken": usuario!.refresh};
+
+    final token = await storage.read(key: 'token') ?? '';
+
+    try {
+      final resp = await http.post(uri,
+          body: jsonEncode(data),
+          headers: {'Content-Type': 'application/json', 'x-token': token});
+
+      if (resp.statusCode == 200) {
+        final loginResponse = jsonDecode(resp.body);
+        print(loginResponse);
         return true;
       } else {
         return false;

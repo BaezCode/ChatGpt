@@ -14,7 +14,7 @@ import 'package:chat_gpt/widgets/msg_bubble.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-
+import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
 import '../../helper/customWidgets.dart';
 
 class ChatPage extends StatefulWidget {
@@ -41,9 +41,6 @@ class _ChatPageState extends State<ChatPage> {
     });
   }
 
-
-
-
   void _confirIntro() {
     if (prefs.vistoTexto == false) {
       CustomWidgets.crearBuildText(context);
@@ -65,25 +62,34 @@ class _ChatPageState extends State<ChatPage> {
 
   void _showRewardedAd() {
     if (_rewardedAd != null) {
-      _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
-        onAdDismissedFullScreenContent: (ad) {
-          ad.dispose();
-          _createRewardedAd();
-        },
-        onAdFailedToShowFullScreenContent: (ad, error) {
-          ad.dispose();
-          _createRewardedAd();
-        },
-      );
-      _rewardedAd!.show(onUserEarnedReward: (ad, reward) async {
-        loginBloc.getReward(reward.amount);
-        setState(() {});
-      });
+      try {
+        _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
+          onAdDismissedFullScreenContent: (ad) {
+            ad.dispose();
+            _createRewardedAd();
+          },
+          onAdFailedToShowFullScreenContent: (ad, error) {
+            ad.dispose();
+            _createRewardedAd();
+          },
+        );
+        _rewardedAd!.show(onUserEarnedReward: (ad, reward) async {
+          loginBloc.getReward(reward.amount);
+          setState(() {});
+        });
+      } catch (e) {
+        print(e);
+      }
+    } else {
+      _createRewardedAd();
+      setState(() {});
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final resp = AppLocalizations.of(context)!;
+
     return BlocBuilder<ChatBloc, ChatState>(
       builder: (context, state) {
         return Scaffold(
@@ -92,7 +98,7 @@ class _ChatPageState extends State<ChatPage> {
             leading: const AccountMenuPop(),
             centerTitle: false,
             title: Text(
-              state.modo == 0 ? "Modo Texto" : "Modo Imagen",
+              state.modo == 0 ? resp.header : resp.header2,
               style: const TextStyle(fontSize: 15),
             ),
             actions: [
@@ -128,37 +134,88 @@ class _ChatPageState extends State<ChatPage> {
           ),
           body: BlocBuilder<ChatBloc, ChatState>(
             builder: (context, state) {
-              return Column(
-                children: [
-                  SizedBox(
-                    height: 35,
-                    child: Row(
-                      children: [
-                        FadeInLeft(
-                            duration: const Duration(milliseconds: 900),
-                            child: RobotChat(
-                              state: state,
-                            )),
-                      ],
-                    ),
+              return GestureDetector(
+                onTap: () {
+                  FocusScope.of(context).unfocus();
+                },
+                child: Container(
+                  decoration: const BoxDecoration(
+                      image: DecorationImage(
+                          image: AssetImage("assets/images/fondo.png"),
+                          fit: BoxFit.cover)),
+                  child: Column(
+                    children: [
+                      SizedBox(
+                        height: 25,
+                        child: Row(
+                          children: [
+                            FadeInLeft(
+                                duration: const Duration(milliseconds: 900),
+                                child: RobotChat(
+                                  state: state,
+                                )),
+                            Spacer(),
+                            MaterialButton(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                color:
+                                    state.modo == 0 ? Colors.blue[700] : null,
+                                child: const Text(
+                                  "Chat",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                onPressed: () {
+                                  chatBloc.clearData();
+                                  chatBloc.add(SetModo(0));
+                                  if (prefs.vistoImagen == false) {
+                                    CustomWidgets.crearBuildImage(context);
+                                  }
+                                }),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            MaterialButton(
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(10)),
+                                color:
+                                    state.modo == 1 ? Colors.blue[700] : null,
+                                child: const Text(
+                                  "Images",
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                                onPressed: () {
+                                  chatBloc.clearData();
+                                  chatBloc.add(SetModo(1));
+                                  if (prefs.vistoImagen == false) {
+                                    CustomWidgets.crearBuildImage(context);
+                                  }
+                                }),
+                            const SizedBox(
+                              width: 10,
+                            )
+                          ],
+                        ),
+                      ),
+                      const Divider(),
+                      Flexible(
+                        child: state.msg.isEmpty
+                            ? NoMsgPage(
+                                state: state,
+                              )
+                            : ListView.builder(
+                                reverse: true,
+                                itemCount: state.msg.length,
+                                itemBuilder: (ctx, i) =>
+                                    _crearBody(state.msg[i]),
+                              ),
+                      ),
+                      const SizedBox(
+                        height: 10,
+                      ),
+                      const InputChat()
+                    ],
                   ),
-                  const Divider(),
-                  Flexible(
-                    child: state.msg.isEmpty
-                        ? NoMsgPage(
-                            state: state,
-                          )
-                        : ListView.builder(
-                            reverse: true,
-                            itemCount: state.msg.length,
-                            itemBuilder: (ctx, i) => _crearBody(state.msg[i]),
-                          ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const InputChat()
-                ],
+                ),
               );
             },
           ),

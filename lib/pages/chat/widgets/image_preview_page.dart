@@ -1,4 +1,5 @@
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:chat_gpt/helper/customWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -20,24 +21,26 @@ class ImagePreview extends StatelessWidget {
           IconButton(
             onPressed: () async {
               try {
-                var imageId =
+                CustomWidgets.buildLoading(context);
+
+                final imageId =
                     await ImageDownloader.downloadImage(arguments.toString());
                 if (imageId == null) {
+                  Navigator.pop(context);
+
                   return;
                 }
+                Navigator.pop(context);
                 Fluttertoast.showToast(msg: "Imagen Guardada Correctamente");
-              } on PlatformException catch (error) {
+              } catch (e) {
+                print(e);
+                Navigator.pop(context);
+
                 Fluttertoast.showToast(msg: "Error Intente de Nuevo");
               }
             },
             icon: const Icon(Icons.save),
           ),
-          IconButton(
-              onPressed: () {},
-              icon: const Icon(
-                Icons.share,
-                color: Colors.white,
-              ))
         ],
         title: const Text("Image Preview"),
       ),

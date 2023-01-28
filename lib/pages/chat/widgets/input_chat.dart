@@ -1,16 +1,14 @@
 import 'package:chat_gpt/bloc/chat/chat_bloc.dart';
 import 'package:chat_gpt/bloc/login/login_bloc.dart';
 import 'package:chat_gpt/bloc/pagos/pagos_bloc.dart';
-import 'package:chat_gpt/helper/customWidgets.dart';
 import 'package:chat_gpt/models/chat_model.dart';
-import 'package:chat_gpt/pages/chat/widgets/menu_pop_chat.dart';
 import 'package:chat_gpt/shared/preferencias_usuario.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
+import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
 
 class InputChat extends StatefulWidget {
   const InputChat({super.key});
@@ -26,7 +24,6 @@ class _InputChatState extends State<InputChat> {
   late LoginBloc loginBloc;
   late PagosBloc pagosBloc;
   final prefs = PreferenciasUsuario();
-
   bool respondiendo = false;
 
   @override
@@ -40,6 +37,8 @@ class _InputChatState extends State<InputChat> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
+    final resp = AppLocalizations.of(context)!;
+
     return Container(
       color: const Color(0xff21232A),
       child: SafeArea(
@@ -82,17 +81,14 @@ class _InputChatState extends State<InputChat> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 10, vertical: 10),
                     child: TextField(
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(60),
-                      ],
                       autofocus: false,
                       controller: _textController,
                       style: const TextStyle(color: Colors.white),
                       maxLines: null,
-                      decoration: const InputDecoration.collapsed(
+                      decoration: InputDecoration.collapsed(
                           fillColor: Colors.white,
-                          hintText: 'Enviar Mensaje',
-                          hintStyle: TextStyle(color: Colors.white)),
+                          hintText: resp.send,
+                          hintStyle: const TextStyle(color: Colors.white)),
                     ),
                   ),
                 ),
@@ -128,6 +124,8 @@ class _InputChatState extends State<InputChat> {
     if (texto.isEmpty) return;
     _textController.clear();
     _focusNode.requestFocus();
+    FocusScope.of(context).unfocus();
+
     if (loginBloc.usuario!.tokens! <= 35) {
       Fluttertoast.showToast(msg: 'Tokens Agotados o por debajo del Limite');
     } else {
@@ -149,6 +147,8 @@ class _InputChatState extends State<InputChat> {
     if (texto.isEmpty) return;
     _textController.clear();
     _focusNode.requestFocus();
+    FocusScope.of(context).unfocus();
+
     if (loginBloc.usuario!.tokens! <= 35) {
       Fluttertoast.showToast(msg: 'Tokens Agotados o por debajo del Limite');
     } else {

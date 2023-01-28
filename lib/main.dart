@@ -1,19 +1,25 @@
+
 import 'package:chat_gpt/bloc/chat/chat_bloc.dart';
 import 'package:chat_gpt/bloc/login/login_bloc.dart';
 import 'package:chat_gpt/bloc/pagos/pagos_bloc.dart';
+import 'package:chat_gpt/l10n/l10n.dart';
 import 'package:chat_gpt/routes/routes.dart';
 import 'package:chat_gpt/shared/preferencias_usuario.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:in_app_purchase/in_app_purchase.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
+
+final _configuration =
+    PurchasesConfiguration('appl_qGzUoiUHsZSFFGNrnFBVvujDOQQ');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
-  InAppPurchase.instance;
-
+  await Purchases.configure(_configuration);
   final prefs = PreferenciasUsuario();
   await prefs.initPrefs();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
@@ -47,8 +53,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      supportedLocales: L10n.all,
       debugShowCheckedModeBanner: false,
       title: 'Gipchat',
+      localizationsDelegates: const [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       routes: appRoutes,
       initialRoute: 'loading',
     );

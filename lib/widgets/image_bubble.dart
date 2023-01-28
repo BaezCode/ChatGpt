@@ -75,7 +75,7 @@ class ImageBubble extends StatelessWidget {
               ),
               Text(
                 "     Used $tokens Tokens",
-                style: TextStyle(color: Colors.white, fontSize: 13),
+                style: const TextStyle(color: Colors.white, fontSize: 13),
               ),
             ],
           )),

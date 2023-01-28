@@ -10,8 +10,9 @@ String usuarioToJson(Usuario data) => json.encode(data.toJson());
 
 class Usuario {
   Usuario({
-    required this.estado,
+    this.estado,
     required this.idAssist,
+    this.refresh,
     this.google,
     this.apple,
     required this.email,
@@ -19,8 +20,9 @@ class Usuario {
     required this.uid,
   });
 
-  String estado;
+  bool? estado;
   String idAssist;
+  String? refresh;
   String uid;
   bool? google;
   bool? apple;
@@ -30,6 +32,7 @@ class Usuario {
   factory Usuario.fromJson(Map<String, dynamic> json) => Usuario(
         estado: json["estado"],
         idAssist: json["idAssist"],
+        refresh: json["refresh"],
         google: json["google"],
         apple: json["apple"],
         tokens: json["tokens"],
@@ -40,6 +43,7 @@ class Usuario {
   Map<String, dynamic> toJson() => {
         "estado": estado,
         "idAssist": idAssist,
+        "refresh": refresh,
         "google": google,
         "apple": apple,
         "tokens": tokens,
