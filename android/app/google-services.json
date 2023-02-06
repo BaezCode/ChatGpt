@@ -7,12 +7,20 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:914801358372:android:e78b6377e9f8642b36cab1",
+        "mobilesdk_app_id": "1:914801358372:android:9bdb588ed113c69436cab1",
         "android_client_info": {
-          "package_name": "baez.code.Gip_chat"
+          "package_name": "baez.code.Gip_chat22"
         }
       },
       "oauth_client": [
+        {
+          "client_id": "914801358372-o2icbib662moquik5rnled204s9mtkto.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "baez.code.Gip_chat22",
+            "certificate_hash": "1c4950a345e0b2708df3777961856c1ba97c9370"
+          }
+        },
         {
           "client_id": "914801358372-a0i50b3u4mqj2mq3e7vn872p3edpuper.apps.googleusercontent.com",
           "client_type": 3
@@ -29,6 +37,13 @@
             {
               "client_id": "914801358372-a0i50b3u4mqj2mq3e7vn872p3edpuper.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "914801358372-itihccgnhdl1uihe8h88b99n3255g76d.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "baez.code.chatGpt"
+              }
             }
           ]
         }

@@ -1,4 +1,4 @@
-package baez.code.Gip_chat
+package baez.code.Gip_chat22
 
 
 import io.flutter.embedding.android.FlutterActivity

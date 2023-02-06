@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chat_gpt/bloc/login/login_bloc.dart';
 import 'package:chat_gpt/helper/dialog.dart';
 import 'package:flutter/material.dart';
@@ -81,21 +83,22 @@ class AccountMenuPop extends StatelessWidget {
                 ),
               ],
             )),
-        PopupMenuItem(
-            value: 2,
-            child: Row(
-              children: [
-                Icon(
-                  Icons.delete,
-                  color: Colors.red[700],
-                  size: 15,
-                ),
-                Text(
-                  "  Delete Account",
-                  style: TextStyle(fontSize: 15, color: Colors.red[700]),
-                ),
-              ],
-            )),
+        if (Platform.isIOS)
+          PopupMenuItem(
+              value: 2,
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.delete,
+                    color: Colors.red[700],
+                    size: 15,
+                  ),
+                  Text(
+                    "  Delete Account",
+                    style: TextStyle(fontSize: 15, color: Colors.red[700]),
+                  ),
+                ],
+              )),
       ],
     );
   }

@@ -1,3 +1,4 @@
+import 'dart:io';
 
 import 'package:chat_gpt/bloc/chat/chat_bloc.dart';
 import 'package:chat_gpt/bloc/login/login_bloc.dart';
@@ -13,12 +14,14 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
 
-final _configuration =
-    PurchasesConfiguration('appl_qGzUoiUHsZSFFGNrnFBVvujDOQQ');
+final _configuration = PurchasesConfiguration(Platform.isIOS
+    ? 'appl_qGzUoiUHsZSFFGNrnFBVvujDOQQ'
+    : 'goog_vNtoOrygJHSjaakORxursYtToUv');
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
+  await Purchases.setDebugLogsEnabled(true);
   await Purchases.configure(_configuration);
   final prefs = PreferenciasUsuario();
   await prefs.initPrefs();

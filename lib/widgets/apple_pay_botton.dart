@@ -15,16 +15,12 @@ class ApplePayButton extends StatefulWidget {
 
 class _ApplePayButtonState extends State<ApplePayButton> {
   late LoginBloc loginBloc;
-  num tokens = 0;
 
   @override
   void initState() {
     super.initState();
     loginBloc = BlocProvider.of<LoginBloc>(context);
-    initStoreInfo();
   }
-
-  void initStoreInfo() async {}
 
   @override
   Widget build(BuildContext context) {

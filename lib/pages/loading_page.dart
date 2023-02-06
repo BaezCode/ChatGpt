@@ -2,6 +2,7 @@ import 'package:chat_gpt/bloc/chat/chat_bloc.dart';
 import 'package:chat_gpt/bloc/login/login_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
 
 class LoadingPage extends StatefulWidget {
   const LoadingPage({super.key});
@@ -29,10 +30,12 @@ class _LoadingPageState extends State<LoadingPage> {
   Future checkLoginState(BuildContext context) async {
     final loginBloc = BlocProvider.of<LoginBloc>(context);
     final chatbloc = BlocProvider.of<ChatBloc>(context);
+    bool result = await InternetConnectionChecker().hasConnection;
 
     final autenticado = await loginBloc.isLoggedIn();
-
-    if (autenticado && mounted) {
+    if (result == false && mounted) {
+      Navigator.pushReplacementNamed(context, 'offline');
+    } else if (autenticado && mounted) {
       chatbloc.add(SetTokens(loginBloc.usuario!.tokens!));
       Navigator.of(context).popUntil((route) => route.isFirst);
       Navigator.pushReplacementNamed(context, 'chat');

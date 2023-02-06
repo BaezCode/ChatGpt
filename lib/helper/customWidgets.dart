@@ -231,10 +231,11 @@ class CustomWidgets {
                             color: Colors.blue[700]),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
                           resp.caracter,
-                          style: TextStyle(color: Colors.white, fontSize: 13),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 13),
                         ),
                       ),
                       Text(
@@ -244,21 +245,15 @@ class CustomWidgets {
                             color: Colors.blue[700]),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
                           resp.tokenCer,
-                          style: TextStyle(color: Colors.white, fontSize: 13),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 13),
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: Text(
-                          resp.freeTokens,
-                          style: TextStyle(color: Colors.white, fontSize: 13),
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
                           resp.limitTokens,
                           style: TextStyle(
@@ -267,10 +262,10 @@ class CustomWidgets {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
                           resp.limitTokensDescripc,
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
                       const Padding(

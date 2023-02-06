@@ -26,3 +26,9 @@ class SetTokens extends ChatEvent {
 
   SetTokens(this.tokens);
 }
+
+class SetConectado extends ChatEvent {
+  final bool conectado;
+
+  SetConectado(this.conectado);
+}

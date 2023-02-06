@@ -4,7 +4,6 @@ import 'package:bloc/bloc.dart';
 import 'package:chat_gpt/bloc/login/login_bloc.dart';
 import 'package:chat_gpt/global/enviroment.dart';
 import 'package:chat_gpt/models/chat_model.dart';
-import 'package:chat_gpt/models/usuario_model.dart';
 import 'package:chat_gpt/shared/preferencias_usuario.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -32,6 +31,9 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<SetTokens>((event, emit) {
       emit(state.copyWith(tokens: event.tokens));
     });
+    on<SetConectado>((event, emit) {
+      emit(state.copyWith(conectado: event.conectado));
+    });
   }
 
   void clearData() {
@@ -44,7 +46,10 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     add(SetListChats(chats));
   }
 
-  Future<bool> getMesaje(String texto, LoginBloc loginBloc) async {
+  Future<bool> getMesaje(
+    String texto,
+    LoginBloc loginBloc,
+  ) async {
     final uri = Uri.parse(
       "${Environment.apiUrl}/mensajes",
     );
@@ -106,7 +111,7 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
         final chatModel = ChatModel(
             de: loginBloc.usuario!.idAssist,
             para: loginBloc.usuario!.uid,
-            tokens: 100,
+            tokens: 200,
             mensaje: respuesta['resp'].trim(),
             dateTime: DateTime.now().millisecondsSinceEpoch,
             tipo: 1);

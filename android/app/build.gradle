@@ -51,13 +51,13 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "baez.code.Gip_chat"
+        applicationId "baez.code.Gip_chat22"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-build-configuration.
         minSdkVersion 21
         targetSdkVersion 31
-        versionCode 6
-        versionName "1.0.6"
+        versionCode 5
+        versionName "1.0.5"
     }
 
      signingConfigs {

@@ -4,6 +4,7 @@ import 'package:chat_gpt/bloc/login/login_bloc.dart';
 import 'package:chat_gpt/helper/customWidgets.dart';
 import 'package:chat_gpt/services/apple_signin_service.dart';
 import 'package:chat_gpt/widgets/boton_login.dart';
+import 'package:chat_gpt/widgets/home_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -35,27 +36,7 @@ class _LoginPageState extends State<LoginPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Padding(
-            padding: const EdgeInsetsDirectional.all(20),
-            child: ClipRRect(
-                borderRadius: BorderRadius.circular(8.0),
-                child: Image.asset(
-                  'assets/images/astronaut.jpg',
-                  fit: BoxFit.cover,
-                )),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: SizedBox(
-              width: double.infinity,
-              child: Text(
-                resp.helloWorld,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                    color: Colors.white, fontWeight: FontWeight.bold),
-              ),
-            ),
-          ),
+          HomeSlider(),
           SizedBox(
             height: size.height * 0.080,
           ),

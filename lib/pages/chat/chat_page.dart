@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:animate_do/animate_do.dart';
 import 'package:chat_gpt/bloc/chat/chat_bloc.dart';
 import 'package:chat_gpt/bloc/login/login_bloc.dart';
@@ -6,16 +8,21 @@ import 'package:chat_gpt/pages/chat/widgets/account_menu_pop.dart';
 import 'package:chat_gpt/pages/chat/widgets/menu_pop_chat.dart';
 import 'package:chat_gpt/pages/chat/widgets/input_chat.dart';
 import 'package:chat_gpt/pages/chat/widgets/no_msg_page.dart';
-import 'package:chat_gpt/pages/chat/widgets/robot_chat.dart';
 import 'package:chat_gpt/services/ads_service.dart';
 import 'package:chat_gpt/shared/preferencias_usuario.dart';
 import 'package:chat_gpt/widgets/image_bubble.dart';
 import 'package:chat_gpt/widgets/msg_bubble.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
+import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:intl/intl.dart';
+import 'package:lottie/lottie.dart';
 import '../../helper/customWidgets.dart';
+import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -28,13 +35,28 @@ class _ChatPageState extends State<ChatPage> {
   final prefs = PreferenciasUsuario();
   late ChatBloc chatBloc;
   late LoginBloc loginBloc;
+  late StreamSubscription<ConnectivityResult> connectivitySubscription;
   RewardedAd? _rewardedAd;
+  bool isDeviceConecte = false;
+  var formatter = NumberFormat('###,###,000');
 
   @override
   void initState() {
     super.initState();
     chatBloc = BlocProvider.of<ChatBloc>(context);
     loginBloc = BlocProvider.of<LoginBloc>(context);
+
+    connectivitySubscription = Connectivity()
+        .onConnectivityChanged
+        .listen((ConnectivityResult result) async {
+      if (result != ConnectivityResult.none) {
+        isDeviceConecte = await InternetConnectionChecker().hasConnection;
+        chatBloc.add(SetConectado(isDeviceConecte));
+      } else {
+        chatBloc.add(SetConectado(false));
+      }
+    });
+
     _createRewardedAd();
     Future.delayed(Duration.zero, () {
       _confirIntro();
@@ -74,11 +96,14 @@ class _ChatPageState extends State<ChatPage> {
           },
         );
         _rewardedAd!.show(onUserEarnedReward: (ad, reward) async {
+          final resp = AppLocalizations.of(context)!;
+
           loginBloc.getReward(reward.amount);
+          Fluttertoast.showToast(msg: resp.rewward);
           setState(() {});
         });
       } catch (e) {
-        print(e);
+        return;
       }
     } else {
       _createRewardedAd();
@@ -95,6 +120,14 @@ class _ChatPageState extends State<ChatPage> {
         return Scaffold(
           backgroundColor: const Color(0xff424549),
           appBar: AppBar(
+            bottom: state.conectado
+                ? null
+                : PreferredSize(
+                    preferredSize: const Size.fromHeight(4.0),
+                    child: LinearProgressIndicator(
+                      backgroundColor: Colors.red[700],
+                      color: Colors.red[300],
+                    )),
             leading: const AccountMenuPop(),
             centerTitle: false,
             title: Text(
@@ -148,13 +181,40 @@ class _ChatPageState extends State<ChatPage> {
                       SizedBox(
                         height: 25,
                         child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            FadeInLeft(
-                                duration: const Duration(milliseconds: 900),
-                                child: RobotChat(
-                                  state: state,
-                                )),
-                            Spacer(),
+                            Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(10),
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Colors.purpleAccent,
+                                    Colors.indigoAccent,
+                                  ],
+                                ),
+                              ),
+                              child: Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 10),
+                                child: Row(
+                                  children: [
+                                    LottieBuilder.asset(
+                                      'assets/images/premium.json',
+                                      height: 25,
+                                    ),
+                                    Text(
+                                      formatter
+                                          .format(loginBloc.usuario!.tokens),
+                                      style: const TextStyle(
+                                          fontSize: 15, color: Colors.white),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(
+                              width: 25,
+                            ),
                             MaterialButton(
                                 shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(10)),
@@ -197,20 +257,22 @@ class _ChatPageState extends State<ChatPage> {
                         ),
                       ),
                       const Divider(),
+                      if (state.msg.isEmpty)
+                        SizedBox(
+                          height: 50,
+                          width: double.infinity,
+                          child: FadeInLeft(
+                            child: NoMsgPage(
+                              state: state,
+                            ),
+                          ),
+                        ),
                       Flexible(
-                        child: state.msg.isEmpty
-                            ? NoMsgPage(
-                                state: state,
-                              )
-                            : ListView.builder(
-                                reverse: true,
-                                itemCount: state.msg.length,
-                                itemBuilder: (ctx, i) =>
-                                    _crearBody(state.msg[i]),
-                              ),
-                      ),
-                      const SizedBox(
-                        height: 10,
+                        child: ListView.builder(
+                          reverse: true,
+                          itemCount: state.msg.length,
+                          itemBuilder: (ctx, i) => _crearBody(state.msg[i]),
+                        ),
                       ),
                       const InputChat()
                     ],

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:chat_gpt/bloc/pagos/pagos_bloc.dart';
 import 'package:chat_gpt/models/token_model.dart';
 import 'package:flutter/material.dart';
@@ -19,17 +21,17 @@ class _PremiumListBodyState extends State<PremiumListBody> {
         titulo: '25.000 Tokens',
         tokens: 25000,
         value: '3.99',
-        keyData: 'tokens_ap_5'),
+        keyData: Platform.isAndroid ? '25.000 tokens' : 'tokens_ap_5'),
     TokenModel(
         titulo: '50.000 Tokens',
         tokens: 50000,
         value: '6.99',
-        keyData: 'tokens_ap_10'),
+        keyData: Platform.isAndroid ? '50.000 Tokens' : 'tokens_ap_10'),
     TokenModel(
         titulo: '100.000 Tokens',
         tokens: 1000000,
         value: '11.99',
-        keyData: 'tokens_ap_15')
+        keyData: Platform.isAndroid ? '100.000 Tokens' : 'tokens_ap_15')
   ];
 
   @override

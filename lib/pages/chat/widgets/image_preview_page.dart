@@ -1,14 +1,21 @@
+import 'dart:typed_data';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_gpt/helper/customWidgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:image_downloader/image_downloader.dart';
+import 'package:http/http.dart';
+import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 
-class ImagePreview extends StatelessWidget {
+class ImagePreview extends StatefulWidget {
   const ImagePreview({super.key});
 
+  @override
+  State<ImagePreview> createState() => _ImagePreviewState();
+}
+
+class _ImagePreviewState extends State<ImagePreview> {
   @override
   Widget build(BuildContext context) {
     final arguments = (ModalRoute.of(context)?.settings.arguments ?? String);
@@ -22,21 +29,15 @@ class ImagePreview extends StatelessWidget {
             onPressed: () async {
               try {
                 CustomWidgets.buildLoading(context);
+                final response = await get(Uri.parse(arguments.toString()));
+                Uint8List bodyBytes = response.bodyBytes;
 
-                final imageId =
-                    await ImageDownloader.downloadImage(arguments.toString());
-                if (imageId == null) {
-                  Navigator.pop(context);
-
-                  return;
-                }
+                await ImageGallerySaver.saveImage(bodyBytes);
                 Navigator.pop(context);
-                Fluttertoast.showToast(msg: "Imagen Guardada Correctamente");
+                Fluttertoast.showToast(msg: "Image Saved");
               } catch (e) {
-                print(e);
-                Navigator.pop(context);
-
-                Fluttertoast.showToast(msg: "Error Intente de Nuevo");
+                Fluttertoast.showToast(msg: "Error ");
+                return;
               }
             },
             icon: const Icon(Icons.save),

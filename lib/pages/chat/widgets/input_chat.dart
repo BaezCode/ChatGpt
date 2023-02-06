@@ -1,3 +1,4 @@
+import 'package:animate_do/animate_do.dart';
 import 'package:chat_gpt/bloc/chat/chat_bloc.dart';
 import 'package:chat_gpt/bloc/login/login_bloc.dart';
 import 'package:chat_gpt/bloc/pagos/pagos_bloc.dart';
@@ -9,6 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
+import 'package:progress_indicators/progress_indicators.dart';
 
 class InputChat extends StatefulWidget {
   const InputChat({super.key});
@@ -24,7 +26,6 @@ class _InputChatState extends State<InputChat> {
   late LoginBloc loginBloc;
   late PagosBloc pagosBloc;
   final prefs = PreferenciasUsuario();
-  bool respondiendo = false;
 
   @override
   void initState() {
@@ -39,84 +40,125 @@ class _InputChatState extends State<InputChat> {
     final size = MediaQuery.of(context).size;
     final resp = AppLocalizations.of(context)!;
 
-    return Container(
-      color: const Color(0xff21232A),
-      child: SafeArea(
-          child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5),
-        child: BlocBuilder<ChatBloc, ChatState>(
-          builder: (context, state) {
-            return Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    pagosBloc.add(SetCompra(5000, '1'));
-                    Navigator.pushNamed(context, 'premium');
-                  },
-                  child: Container(
-                      width: 40,
-                      height: 35,
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(30),
-                        gradient: const LinearGradient(
-                          colors: [
-                            Colors.purpleAccent,
-                            Colors.indigoAccent,
-                          ],
+    return BlocBuilder<ChatBloc, ChatState>(
+      builder: (context, state) {
+        return Column(
+          children: [
+            if (state.escribiendo)
+              Container(
+                color: const Color(0xff21232A),
+                width: double.infinity,
+                height: 40,
+                child: FadeInLeft(
+                  duration: const Duration(milliseconds: 200),
+                  child: Row(
+                    children: [
+                      const SizedBox(
+                        width: 5,
+                      ),
+                      Image.asset(
+                        "assets/images/logo.png",
+                      ),
+                      Text(
+                        resp.tipping,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
                         ),
                       ),
-                      child: LottieBuilder.asset(
-                        'assets/images/premium.json',
-                        height: 100,
-                      )),
-                ),
-                Container(
-                  decoration: BoxDecoration(
-                      color: const Color(0xff424549),
-                      borderRadius: BorderRadius.circular(10)),
-                  width: size.width * 0.60,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 10, vertical: 10),
-                    child: TextField(
-                      autofocus: false,
-                      controller: _textController,
-                      style: const TextStyle(color: Colors.white),
-                      maxLines: null,
-                      decoration: InputDecoration.collapsed(
-                          fillColor: Colors.white,
-                          hintText: resp.send,
-                          hintStyle: const TextStyle(color: Colors.white)),
-                    ),
+                      JumpingDotsProgressIndicator(
+                        numberOfDots: 4,
+                        fontSize: 18.0,
+                        color: Colors.white,
+                      ),
+                    ],
                   ),
                 ),
-                const SizedBox(
-                  width: 5,
+              ),
+            Container(
+              color: const Color(0xff21232A),
+              child: SafeArea(
+                  child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 5),
+                child: BlocBuilder<ChatBloc, ChatState>(
+                  builder: (context, state) {
+                    return Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        GestureDetector(
+                          onTap: () {
+                            pagosBloc.add(SetCompra(0, ''));
+                            Navigator.pushNamed(context, 'premium');
+                          },
+                          child: Container(
+                              width: 40,
+                              height: 35,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(30),
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Colors.purpleAccent,
+                                    Colors.indigoAccent,
+                                  ],
+                                ),
+                              ),
+                              child: LottieBuilder.asset(
+                                'assets/images/premium.json',
+                                height: 100,
+                              )),
+                        ),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: const Color(0xff424549),
+                              borderRadius: BorderRadius.circular(10)),
+                          width: size.width * 0.60,
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 10),
+                            child: TextField(
+                              autofocus: false,
+                              controller: _textController,
+                              style: const TextStyle(color: Colors.white),
+                              maxLines: null,
+                              decoration: InputDecoration.collapsed(
+                                  fillColor: Colors.white,
+                                  hintText: resp.send,
+                                  hintStyle:
+                                      const TextStyle(color: Colors.white)),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        ),
+                        CircleAvatar(
+                          radius: 20,
+                          child: IconButton(
+                              onPressed: state.escribiendo
+                                  ? null
+                                  : () => state.modo == 0
+                                      ? submitText(_textController.text.trim())
+                                      : submitImage(
+                                          _textController.text.trim()),
+                              icon: const Icon(
+                                CupertinoIcons.location_fill,
+                                color: Colors.white,
+                                size: 20,
+                              )),
+                        ),
+                        const SizedBox(
+                          width: 5,
+                        )
+                      ],
+                    );
+                  },
                 ),
-                CircleAvatar(
-                  radius: 20,
-                  child: IconButton(
-                      onPressed: state.escribiendo
-                          ? null
-                          : () => state.modo == 0
-                              ? submitText(_textController.text.trim())
-                              : submitImage(_textController.text.trim()),
-                      icon: const Icon(
-                        CupertinoIcons.location_fill,
-                        color: Colors.white,
-                        size: 20,
-                      )),
-                ),
-                const SizedBox(
-                  width: 5,
-                )
-              ],
-            );
-          },
-        ),
-      )),
+              )),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -160,7 +202,6 @@ class _InputChatState extends State<InputChat> {
           dateTime: DateTime.now().millisecondsSinceEpoch,
           tipo: 0);
       chatBloc.addChats(chatModel);
-
       chatBloc.add(SetEscribiendo(true));
       await chatBloc.getMesaje(texto, loginBloc);
       chatBloc.add(SetEscribiendo(false));
