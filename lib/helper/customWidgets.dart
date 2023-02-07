@@ -4,7 +4,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
-import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
 
 class CustomWidgets {
   CustomWidgets._();

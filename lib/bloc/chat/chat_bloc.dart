@@ -130,4 +130,34 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
       return false;
     }
   }
+
+  Future<bool> getImagesVariation(String path) async {
+    final uri = Uri.parse(
+      "${Environment.apiUrl}/mensajes/variation",
+    );
+    final token = await storage.read(key: 'token') ?? '';
+
+    Map<String, String> headers = {"x-token": token};
+
+    try {
+      final imageUplodaRequest = http.MultipartRequest(
+        'POST',
+        uri,
+      );
+      imageUplodaRequest.headers.addAll(headers);
+      final file = await http.MultipartFile.fromPath('archivo', path);
+      imageUplodaRequest.files.add(file);
+      final streamResponse = await imageUplodaRequest.send();
+      final resp = await http.Response.fromStream(streamResponse);
+      if (resp.statusCode == 201) {
+        print(resp.body);
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print(e);
+      return false;
+    }
+  }
 }

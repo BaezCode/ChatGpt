@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:animate_do/animate_do.dart';
 import 'package:chat_gpt/bloc/chat/chat_bloc.dart';
 import 'package:chat_gpt/bloc/login/login_bloc.dart';
+import 'package:chat_gpt/bloc/pagos/pagos_bloc.dart';
 import 'package:chat_gpt/models/chat_model.dart';
 import 'package:chat_gpt/pages/chat/widgets/account_menu_pop.dart';
 import 'package:chat_gpt/pages/chat/widgets/menu_pop_chat.dart';
@@ -22,7 +23,6 @@ import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import '../../helper/customWidgets.dart';
-import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
 
 class ChatPage extends StatefulWidget {
   const ChatPage({super.key});
@@ -35,6 +35,7 @@ class _ChatPageState extends State<ChatPage> {
   final prefs = PreferenciasUsuario();
   late ChatBloc chatBloc;
   late LoginBloc loginBloc;
+  late PagosBloc pagosBloc;
   late StreamSubscription<ConnectivityResult> connectivitySubscription;
   RewardedAd? _rewardedAd;
   bool isDeviceConecte = false;
@@ -45,6 +46,7 @@ class _ChatPageState extends State<ChatPage> {
     super.initState();
     chatBloc = BlocProvider.of<ChatBloc>(context);
     loginBloc = BlocProvider.of<LoginBloc>(context);
+    pagosBloc = BlocProvider.of<PagosBloc>(context);
 
     connectivitySubscription = Connectivity()
         .onConnectivityChanged
@@ -183,32 +185,38 @@ class _ChatPageState extends State<ChatPage> {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.circular(10),
-                                gradient: const LinearGradient(
-                                  colors: [
-                                    Colors.purpleAccent,
-                                    Colors.indigoAccent,
-                                  ],
+                            GestureDetector(
+                              onTap: () {
+                                pagosBloc.add(SetCompra(0, ''));
+                                Navigator.pushNamed(context, 'premium');
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10),
+                                  gradient: const LinearGradient(
+                                    colors: [
+                                      Colors.purpleAccent,
+                                      Colors.indigoAccent,
+                                    ],
+                                  ),
                                 ),
-                              ),
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 10),
-                                child: Row(
-                                  children: [
-                                    LottieBuilder.asset(
-                                      'assets/images/premium.json',
-                                      height: 25,
-                                    ),
-                                    Text(
-                                      formatter
-                                          .format(loginBloc.usuario!.tokens),
-                                      style: const TextStyle(
-                                          fontSize: 15, color: Colors.white),
-                                    ),
-                                  ],
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 10),
+                                  child: Row(
+                                    children: [
+                                      LottieBuilder.asset(
+                                        'assets/images/premium.json',
+                                        height: 25,
+                                      ),
+                                      Text(
+                                        formatter
+                                            .format(loginBloc.usuario!.tokens),
+                                        style: const TextStyle(
+                                            fontSize: 15, color: Colors.white),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),

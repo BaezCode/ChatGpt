@@ -42,6 +42,13 @@
 	<false/>
 	<key>GADApplicationIdentifier</key>
     <string>ca-app-pub-1566237285206026~8144649528</string>
+	<key>SKAdNetworkItems</key>
+    <array>
+     <dict>
+      <key>SKAdNetworkIdentifier</key>
+      <string>cstr6suwn9.skadnetwork</string>
+     </dict>
+	</array>
 	<key>NSPhotoLibraryUsageDescription</key>
     <string>This app requires access to the photo library to save Image.</string>
     <key>NSPhotoLibraryAddUsageDescription</key>

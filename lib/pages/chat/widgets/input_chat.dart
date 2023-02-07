@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
 import 'package:progress_indicators/progress_indicators.dart';
@@ -26,6 +27,7 @@ class _InputChatState extends State<InputChat> {
   late LoginBloc loginBloc;
   late PagosBloc pagosBloc;
   final prefs = PreferenciasUsuario();
+  bool textoEscrito = false;
 
   @override
   void initState() {
@@ -112,12 +114,23 @@ class _InputChatState extends State<InputChat> {
                           decoration: BoxDecoration(
                               color: const Color(0xff424549),
                               borderRadius: BorderRadius.circular(10)),
-                          width: size.width * 0.60,
+                          width: size.width * 0.65,
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 10, vertical: 10),
                             child: TextField(
                               autofocus: false,
+                              onChanged: (value) {
+                                if (value.isEmpty) {
+                                  setState(() {
+                                    textoEscrito = false;
+                                  });
+                                } else {
+                                  setState(() {
+                                    textoEscrito = true;
+                                  });
+                                }
+                              },
                               controller: _textController,
                               style: const TextStyle(color: Colors.white),
                               maxLines: null,
@@ -129,23 +142,25 @@ class _InputChatState extends State<InputChat> {
                             ),
                           ),
                         ),
-                        const SizedBox(
-                          width: 5,
-                        ),
                         CircleAvatar(
-                          radius: 20,
+                          radius: 22,
                           child: IconButton(
                               onPressed: state.escribiendo
                                   ? null
-                                  : () => state.modo == 0
-                                      ? submitText(_textController.text.trim())
-                                      : submitImage(
-                                          _textController.text.trim()),
-                              icon: const Icon(
-                                CupertinoIcons.location_fill,
-                                color: Colors.white,
-                                size: 20,
-                              )),
+                                  : textoEscrito == false
+                                      ? _submitImage
+                                      : () => state.modo == 0
+                                          ? submitText(
+                                              _textController.text.trim())
+                                          : submitImage(
+                                              _textController.text.trim()),
+                              icon: state.modo == 1 && textoEscrito == false
+                                  ? const Icon(Icons.image)
+                                  : const Icon(
+                                      CupertinoIcons.location_fill,
+                                      color: Colors.white,
+                                      size: 25,
+                                    )),
                         ),
                         const SizedBox(
                           width: 5,
@@ -162,14 +177,29 @@ class _InputChatState extends State<InputChat> {
     );
   }
 
+  void _submitImage() async {
+    final picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(
+      source: ImageSource.gallery,
+      imageQuality: 80,
+    );
+    if (pickedFile == null) {
+      return;
+    }
+    final resp = await chatBloc.getImagesVariation(pickedFile.path);
+    print(resp);
+  }
+
   void submitImage(String texto) async {
     if (texto.isEmpty) return;
     _textController.clear();
     _focusNode.requestFocus();
-    FocusScope.of(context).unfocus();
 
     if (loginBloc.usuario!.tokens! <= 35) {
       Fluttertoast.showToast(msg: 'Tokens Agotados o por debajo del Limite');
+      setState(() {
+        textoEscrito = false;
+      });
     } else {
       final chatModel = ChatModel(
           de: loginBloc.usuario!.uid,
@@ -182,6 +212,9 @@ class _InputChatState extends State<InputChat> {
       chatBloc.add(SetEscribiendo(true));
       await chatBloc.getImage(texto, loginBloc);
       chatBloc.add(SetEscribiendo(false));
+      setState(() {
+        textoEscrito = false;
+      });
     }
   }
 
@@ -189,7 +222,6 @@ class _InputChatState extends State<InputChat> {
     if (texto.isEmpty) return;
     _textController.clear();
     _focusNode.requestFocus();
-    FocusScope.of(context).unfocus();
 
     if (loginBloc.usuario!.tokens! <= 35) {
       Fluttertoast.showToast(msg: 'Tokens Agotados o por debajo del Limite');

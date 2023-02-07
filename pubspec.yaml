@@ -62,7 +62,9 @@ dependencies:
   purchases_flutter: ^4.7.0
   path_provider: ^2.0.12
   image_gallery_saver: ^1.7.1
-  card_swiper: 
+  card_swiper:
+  image_picker: ^0.8.6+1
+
   
 
 

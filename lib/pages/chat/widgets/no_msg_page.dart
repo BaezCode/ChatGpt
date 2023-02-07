@@ -40,7 +40,7 @@ class _NoMsgPageState extends State<NoMsgPage> {
         const SizedBox(
           height: 10,
         ),
-        Text(resp.consult,
+        Text(resp.welcome,
             textAlign: TextAlign.center,
             style: const TextStyle(
               fontSize: 15.0,
