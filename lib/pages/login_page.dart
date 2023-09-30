@@ -36,7 +36,7 @@ class _LoginPageState extends State<LoginPage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          HomeSlider(),
+          const HomeSlider(),
           SizedBox(
             height: size.height * 0.080,
           ),

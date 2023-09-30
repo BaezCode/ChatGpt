@@ -26,7 +26,7 @@ class CustomWidgets {
                 child: Column(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.all(2.0),
+                      padding: const EdgeInsets.all(10.0),
                       child: Row(
                         children: [
                           Text(
@@ -49,10 +49,10 @@ class CustomWidgets {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.all(10.0),
                       child: Text(
                         resp.tokenLimitDescrp,
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                     SizedBox(
@@ -60,8 +60,8 @@ class CustomWidgets {
                       width: double.infinity,
                       child: Slider(
                         value: limite,
-                        min: 35,
-                        max: 300,
+                        min: 50,
+                        max: 1500,
                         divisions: 100,
                         label: limite.round().toString(),
                         onChanged: (data) {
@@ -72,10 +72,10 @@ class CustomWidgets {
                       ),
                     ),
                     Padding(
-                      padding: EdgeInsets.all(10.0),
+                      padding: const EdgeInsets.all(10.0),
                       child: Text(
                         resp.tokenLimitDescrp2,
-                        style: TextStyle(color: Colors.white),
+                        style: const TextStyle(color: Colors.white),
                       ),
                     ),
                     SafeArea(
@@ -85,7 +85,7 @@ class CustomWidgets {
                           color: const Color(0xff21232A),
                           child: Text(
                             resp.confirm,
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
                           onPressed: () {
                             Fluttertoast.showToast(msg: 'Saved OK');
@@ -108,7 +108,7 @@ class CustomWidgets {
         builder: (bc) {
           return const Center(
             child: CircularProgressIndicator(
-              color: Color(0xffA11216),
+              color: Colors.white,
             ),
           );
         });
@@ -149,12 +149,12 @@ class CustomWidgets {
                     height: 20,
                   ),
                   FadeIn(
-                    duration: Duration(milliseconds: 1000),
+                    duration: const Duration(milliseconds: 1000),
                     child: Padding(
-                      padding: EdgeInsets.all(8.0),
+                      padding: const EdgeInsets.all(8.0),
                       child: Text(resp.imageInfo,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 15.0,
                             color: Colors.white,
                           )),
@@ -170,7 +170,7 @@ class CustomWidgets {
                         color: const Color(0xff424549),
                         child: Text(
                           resp.start,
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                         onPressed: () {
                           prefs.vistoImagen = true;
@@ -217,10 +217,11 @@ class CustomWidgets {
                             color: Colors.blue[700]),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(8.0),
+                        padding: const EdgeInsets.all(8.0),
                         child: Text(
                           resp.davinci,
-                          style: TextStyle(color: Colors.white, fontSize: 13),
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 13),
                         ),
                       ),
                       Text(
@@ -279,8 +280,8 @@ class CustomWidgets {
                         width: double.infinity,
                         child: Slider(
                           value: limite,
-                          min: 35,
-                          max: 300,
+                          min: 50,
+                          max: 1500,
                           divisions: 100,
                           label: limite.round().toString(),
                           onChanged: (data) {
@@ -291,10 +292,10 @@ class CustomWidgets {
                         ),
                       ),
                       Padding(
-                        padding: EdgeInsets.all(10.0),
+                        padding: const EdgeInsets.all(10.0),
                         child: Text(
                           resp.finalDescrip,
-                          style: TextStyle(color: Colors.white),
+                          style: const TextStyle(color: Colors.white),
                         ),
                       ),
                       const SizedBox(

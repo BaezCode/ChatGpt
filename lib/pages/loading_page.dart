@@ -38,7 +38,7 @@ class _LoadingPageState extends State<LoadingPage> {
     } else if (autenticado && mounted) {
       chatbloc.add(SetTokens(loginBloc.usuario!.tokens!));
       Navigator.of(context).popUntil((route) => route.isFirst);
-      Navigator.pushReplacementNamed(context, 'chat');
+      Navigator.pushReplacementNamed(context, 'home');
     } else {
       Navigator.of(context).popUntil((route) => route.isFirst);
       Navigator.pushReplacementNamed(context, 'login');

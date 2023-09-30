@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:chat_gpt/bloc/pagos/pagos_bloc.dart';
-import 'package:chat_gpt/models/token_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
 
 class PremiumListBody extends StatefulWidget {
   const PremiumListBody({super.key});
@@ -16,28 +16,23 @@ class PremiumListBody extends StatefulWidget {
 class _PremiumListBodyState extends State<PremiumListBody> {
   var formatter = NumberFormat('###,###,000');
   late PagosBloc pagosBloc;
-  final List<TokenModel> lista = [
-    TokenModel(
-        titulo: '25.000 Tokens',
-        tokens: 25000,
-        value: '3.99',
-        keyData: Platform.isAndroid ? '25.000 tokens' : 'tokens_ap_5'),
-    TokenModel(
-        titulo: '50.000 Tokens',
-        tokens: 50000,
-        value: '6.99',
-        keyData: Platform.isAndroid ? '50.000 Tokens' : 'tokens_ap_10'),
-    TokenModel(
-        titulo: '100.000 Tokens',
-        tokens: 1000000,
-        value: '11.99',
-        keyData: Platform.isAndroid ? '100.000 Tokens' : 'tokens_ap_15')
-  ];
+  List<Package> packages = [];
 
   @override
   void initState() {
     super.initState();
     pagosBloc = BlocProvider.of<PagosBloc>(context);
+    init();
+  }
+
+  void init() async {
+    try {
+      final offering = await Purchases.getOfferings();
+      packages = offering.current!.availablePackages;
+      setState(() {});
+    } catch (e) {
+      return;
+    }
   }
 
   @override
@@ -47,19 +42,20 @@ class _PremiumListBodyState extends State<PremiumListBody> {
         return SingleChildScrollView(
           child: ListView.builder(
               shrinkWrap: true,
-              itemCount: lista.length,
-              itemBuilder: (ctx, i) => _header(lista[i], state.idCompra)),
+              itemCount: packages.length,
+              itemBuilder: (ctx, i) => _header(packages[i], state.idCompra)),
         );
       },
     );
   }
 
-  Widget _header(TokenModel tokenModel, String keydata) {
+  Widget _header(Package package, String keydata) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 15),
+      padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 10),
       child: GestureDetector(
-        onTap: () =>
-            pagosBloc.add(SetCompra(tokenModel.tokens, tokenModel.keyData)),
+        onTap: () {
+          pagosBloc.add(SetCompra(package.storeProduct.identifier, package));
+        },
         child: Container(
             height: 70,
             decoration: BoxDecoration(
@@ -70,7 +66,7 @@ class _PremiumListBodyState extends State<PremiumListBody> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 Icon(
-                  keydata == tokenModel.keyData
+                  keydata == package.storeProduct.identifier
                       ? Icons.circle_rounded
                       : Icons.circle_outlined,
                   color: Colors.blue[700],
@@ -79,15 +75,22 @@ class _PremiumListBodyState extends State<PremiumListBody> {
                   width: 10,
                 ),
                 Text(
-                  tokenModel.titulo,
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  Platform.isAndroid
+                      ? package.storeProduct.title.characters
+                          .take(19)
+                          .toString()
+                      : package.storeProduct.title,
+                  style: const TextStyle(color: Colors.white, fontSize: 15),
                 ),
                 const SizedBox(
                   width: 10,
                 ),
                 Text(
-                  "${tokenModel.value} \$",
-                  style: TextStyle(color: Colors.white, fontSize: 16),
+                  package.storeProduct.priceString,
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                const SizedBox(
+                  width: 5,
                 )
               ],
             )),
@@ -97,7 +100,7 @@ class _PremiumListBodyState extends State<PremiumListBody> {
 
   InputDecoration inputCustomDecoration(String label, IconData icon) {
     return InputDecoration(
-        labelStyle: TextStyle(color: Colors.white),
+        labelStyle: const TextStyle(color: Colors.white),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10),
           borderSide: const BorderSide(

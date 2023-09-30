@@ -1,5 +1,3 @@
-import 'package:meta/meta.dart';
-
 class StripeCustomResponse {
   final bool ok;
   final String msg;

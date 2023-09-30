@@ -35,8 +35,8 @@ class _NoConexionPageState extends State<NoConexionPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Color(0xff21232A),
-        title: Text("Sin Conexion"),
+        backgroundColor: const Color(0xff21232A),
+        title: const Text("Sin Conexion"),
       ),
       body: Center(
         child: Column(
@@ -46,10 +46,10 @@ class _NoConexionPageState extends State<NoConexionPage> {
               'images/offline.json',
               height: 250,
             ),
-            SizedBox(
+            const SizedBox(
               height: 25,
             ),
-            Text(
+            const Text(
               "Check your Internet Connection",
               style: TextStyle(fontWeight: FontWeight.bold),
             )

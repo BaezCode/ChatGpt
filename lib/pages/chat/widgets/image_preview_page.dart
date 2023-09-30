@@ -1,10 +1,8 @@
 import 'dart:typed_data';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chat_gpt/helper/customWidgets.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:http/http.dart';
 import 'package:image_gallery_saver/image_gallery_saver.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
 
@@ -18,7 +16,7 @@ class ImagePreview extends StatefulWidget {
 class _ImagePreviewState extends State<ImagePreview> {
   @override
   Widget build(BuildContext context) {
-    final arguments = (ModalRoute.of(context)?.settings.arguments ?? String);
+    final arguments = (ModalRoute.of(context)?.settings.arguments ?? Uint8List);
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -29,10 +27,9 @@ class _ImagePreviewState extends State<ImagePreview> {
             onPressed: () async {
               try {
                 CustomWidgets.buildLoading(context);
-                final response = await get(Uri.parse(arguments.toString()));
-                Uint8List bodyBytes = response.bodyBytes;
 
-                await ImageGallerySaver.saveImage(bodyBytes);
+                await ImageGallerySaver.saveImage(arguments as Uint8List);
+                // ignore: use_build_context_synchronously
                 Navigator.pop(context);
                 Fluttertoast.showToast(msg: "Image Saved");
               } catch (e) {
@@ -49,7 +46,7 @@ class _ImagePreviewState extends State<ImagePreview> {
         child: PinchZoom(
             resetDuration: const Duration(milliseconds: 100),
             maxScale: 2.5,
-            child: CachedNetworkImage(imageUrl: arguments.toString())),
+            child: Image.memory(arguments as Uint8List)),
       ),
     );
   }

@@ -25,50 +25,9 @@ class _NoMsgPageState extends State<NoMsgPage> {
   @override
   Widget build(BuildContext context) {
     final resp = AppLocalizations.of(context)!;
-    return widget.state.modo == 0 ? _exampleTest(resp) : _imageMode(resp);
-  }
-
-  Widget _exampleTest(AppLocalizations resp) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Image.asset(
-          "assets/images/logo.png",
-          height: 50,
-          width: 50,
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Text(resp.welcome,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 15.0,
-              color: Colors.white,
-            )),
-      ],
-    );
-  }
-
-  Widget _imageMode(AppLocalizations resp) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: [
-        Image.asset(
-          "assets/images/logo.png",
-          height: 50,
-          width: 50,
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Text(resp.consult,
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontSize: 15.0,
-              color: Colors.white,
-            )),
-      ],
-    );
+    return Text(resp.welcome,
+        textAlign: TextAlign.center,
+        style: const TextStyle(
+            fontSize: 15.0, color: Colors.white, fontWeight: FontWeight.bold));
   }
 }

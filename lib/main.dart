@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:chat_gpt/bloc/action/action_bloc.dart';
 import 'package:chat_gpt/bloc/chat/chat_bloc.dart';
+import 'package:chat_gpt/bloc/conversaciones/conversaciones_bloc.dart';
 import 'package:chat_gpt/bloc/login/login_bloc.dart';
 import 'package:chat_gpt/bloc/pagos/pagos_bloc.dart';
 import 'package:chat_gpt/l10n/l10n.dart';
@@ -11,6 +13,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
 
@@ -21,6 +25,10 @@ final _configuration = PurchasesConfiguration(Platform.isIOS
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   MobileAds.instance.initialize();
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: await getTemporaryDirectory(),
+  );
+  // ignore: deprecated_member_use
   await Purchases.setDebugLogsEnabled(true);
   await Purchases.configure(_configuration);
   final prefs = PreferenciasUsuario();
@@ -45,6 +53,12 @@ class AppState extends StatelessWidget {
       ),
       BlocProvider(
         create: (context) => PagosBloc(),
+      ),
+      BlocProvider(
+        create: (context) => ConversacionesBloc(),
+      ),
+      BlocProvider(
+        create: (context) => ActionBloc(),
       ),
     ], child: const MyApp());
   }

@@ -2,7 +2,6 @@ import 'package:chat_gpt/bloc/login/login_bloc.dart';
 import 'package:chat_gpt/bloc/pagos/pagos_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
 import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
 
@@ -11,8 +10,8 @@ class ThanksYouPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var formatter = NumberFormat('###,###,000');
     final resp = AppLocalizations.of(context)!;
+    final loginBloc = BlocProvider.of<LoginBloc>(context);
 
     return Scaffold(
       backgroundColor: const Color(0xff21232A),
@@ -30,14 +29,7 @@ class ThanksYouPage extends StatelessWidget {
                     color: Colors.white),
               ),
               const SizedBox(
-                height: 10,
-              ),
-              Text(
-                '${formatter.format(state.tokensAComprar)}, ${resp.pay2}',
-                style: const TextStyle(color: Colors.white),
-              ),
-              const SizedBox(
-                height: 25,
+                height: 50,
               ),
               MaterialButton(
                   shape: RoundedRectangleBorder(
@@ -47,8 +39,10 @@ class ThanksYouPage extends StatelessWidget {
                     resp.confirm,
                     style: const TextStyle(color: Colors.white),
                   ),
-                  onPressed: () =>
-                      Navigator.pushReplacementNamed(context, 'chat'))
+                  onPressed: () {
+                    loginBloc.add(SetSuscriptionActive(true));
+                    Navigator.pushReplacementNamed(context, 'home');
+                  })
             ],
           );
         },

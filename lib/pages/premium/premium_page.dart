@@ -17,15 +17,24 @@ class PremiumPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loginBloc = BlocProvider.of<LoginBloc>(context);
+    final size = MediaQuery.of(context).size;
     var formatter = NumberFormat('###,###,000');
     final resp = AppLocalizations.of(context)!;
-
+    final List<String> datos = [
+      resp.pr1,
+      resp.pr2,
+      resp.pr3,
+      resp.pr4,
+      resp.pr5,
+    ];
     return BlocBuilder<PagosBloc, PagosState>(
       builder: (context, state) {
         return Scaffold(
-          floatingActionButton: Platform.isAndroid
-              ? const BotonGooglePay()
-              : const ApplePayButton(),
+          floatingActionButton: loginBloc.state.susActive
+              ? null
+              : Platform.isAndroid
+                  ? const BotonGooglePay()
+                  : const ApplePayButton(),
           backgroundColor: const Color(0xff21232A),
           appBar: AppBar(
             title: Text(
@@ -34,9 +43,6 @@ class PremiumPage extends StatelessWidget {
             ),
             backgroundColor: Colors.transparent,
             elevation: 0,
-            leading: IconButton(
-                onPressed: () => Navigator.pop(context),
-                icon: const Icon(Icons.cancel)),
           ),
           body: Center(
             child: Column(
@@ -58,12 +64,65 @@ class PremiumPage extends StatelessWidget {
                 ),
                 Text(
                   resp.premium3,
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                 ),
                 const SizedBox(
                   height: 15,
                 ),
-                const PremiumListBody(),
+                SizedBox(
+                  width: size.width * 0.55,
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: datos.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 10),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: [
+                            Icon(
+                              Icons.check,
+                              color: Colors.green[700],
+                            ),
+                            const SizedBox(
+                              width: 10,
+                            ),
+                            Text(
+                              datos[index],
+                              style: const TextStyle(color: Colors.white),
+                            )
+                          ],
+                        ),
+                      );
+                    },
+                  ),
+                ),
+                const SizedBox(
+                  height: 15,
+                ),
+                if (loginBloc.state.susActive == false) const PremiumListBody(),
+                if (loginBloc.state.susActive) ...[
+                  const SizedBox(
+                    height: 25,
+                  ),
+                  SizedBox(
+                    height: 50,
+                    width: double.infinity,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 75),
+                      child: MaterialButton(
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10)),
+                          minWidth: 1,
+                          color: Colors.black,
+                          onPressed: () {},
+                          child: const Text(
+                            'Your subscription is active',
+                            style: TextStyle(color: Colors.white, fontSize: 15),
+                          )),
+                    ),
+                  )
+                ]
               ],
             ),
           ),

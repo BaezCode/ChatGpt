@@ -1,12 +1,15 @@
 import 'dart:convert';
 
-import 'package:bloc/bloc.dart';
 import 'package:chat_gpt/bloc/login/login_bloc.dart';
 import 'package:chat_gpt/global/enviroment.dart';
 import 'package:chat_gpt/models/chat_model.dart';
+import 'package:chat_gpt/models/msg_response.dart';
+import 'package:chat_gpt/models/response_model.dart';
 import 'package:chat_gpt/shared/preferencias_usuario.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+// ignore: depend_on_referenced_packages
 import 'package:meta/meta.dart';
 import 'package:http/http.dart' as http;
 
@@ -15,6 +18,8 @@ part 'chat_state.dart';
 
 class ChatBloc extends Bloc<ChatEvent, ChatState> {
   List<ChatModel> chats = [];
+  List<Message> listResp = [];
+
   final prefs = PreferenciasUsuario();
   FlutterSecureStorage storage = const FlutterSecureStorage();
 
@@ -34,6 +39,16 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     on<SetConectado>((event, emit) {
       emit(state.copyWith(conectado: event.conectado));
     });
+    on<SetSiEscribo>((event, emit) {
+      emit(state.copyWith(estaEscribiendo: event.estaEscribiendo));
+    });
+    on<SelectIndex>((event, emit) {
+      emit(state.copyWith(indexHome: event.indexHome));
+    });
+  }
+
+  Future selectedIndex(int index) async {
+    add(SelectIndex(index));
   }
 
   void clearData() {
@@ -46,118 +61,112 @@ class ChatBloc extends Bloc<ChatEvent, ChatState> {
     add(SetListChats(chats));
   }
 
-  Future<bool> getMesaje(
+  void chargeList(List<ChatModel> lista) {
+    chats = lista;
+    add(SetListChats(chats));
+  }
+
+  Future<List<ChatModel>> getGP4(
     String texto,
     LoginBloc loginBloc,
   ) async {
     final uri = Uri.parse(
-      "${Environment.apiUrl}/mensajes",
+      "${Environment.apiUrl}/mensajes/gpt4",
     );
     final token = await storage.read(key: 'token') ?? '';
+
     int solicitud = loginBloc.usuario!.tokens! <= prefs.limiteToken.toInt()
         ? loginBloc.usuario!.tokens!
         : prefs.limiteToken.toInt();
+
+    final resp = Message(role: 'user', content: texto);
+    if (listResp.length > 2) {
+      listResp.removeRange(0, 2);
+    }
+    listResp.add(resp);
     final data = {
-      "model": "text-davinci-003",
-      "prompt": texto,
-      "max_tokens": solicitud,
-      "temperature": 0,
+      "tokens": 500,
+      "temp": 0.7,
+      'messages': listResp,
+      "pro": loginBloc.state.susActive
     };
     try {
       final resp = await http.post(uri,
           body: jsonEncode(data),
           headers: {'Content-Type': 'application/json', 'x-token': token});
       if (resp.statusCode == 200) {
-        final respuesta = jsonDecode(resp.body);
+        final respuesta = responseModelFromJson(resp.body);
 
+        listResp.add(respuesta.message);
         final chatModel = ChatModel(
             de: loginBloc.usuario!.idAssist,
             para: loginBloc.usuario!.uid,
-            tokens: respuesta['tokens'],
-            mensaje: respuesta['resp'].trim(),
+            list: [],
+            tokens: loginBloc.state.susActive ? 0 : respuesta.tokens,
+            mensaje: respuesta.message.content,
             dateTime: DateTime.now().millisecondsSinceEpoch,
             tipo: 0);
-        loginBloc.usuario!.tokens =
-            loginBloc.usuario!.tokens! - chatModel.tokens;
+        if (loginBloc.state.susActive == false) {
+          loginBloc.usuario!.tokens =
+              loginBloc.usuario!.tokens! - chatModel.tokens;
+        }
         chats.insert(0, chatModel);
         add(SetListChats(chats));
-        return true;
+        return chats;
       } else {
         Fluttertoast.showToast(
             msg: "Error Palabra Restringida Intente de Nuevo");
-        return false;
+        return chats;
       }
     } catch (e) {
       Fluttertoast.showToast(msg: "Error Intente de Nuevo");
 
-      return false;
+      return chats;
     }
   }
 
-  Future<bool> getImage(String texto, LoginBloc loginBloc) async {
+  Future getMesaje(String text, LoginBloc loginBloc) async {
     final uri = Uri.parse(
-      "${Environment.apiUrl}/mensajes/image",
+      "${Environment.apiUrl}/mensajes",
     );
-    final data = {"prompt": texto, "n": 1, "size": "512x512"};
-    final token = await storage.read(key: 'token') ?? '';
-
+    final data = {
+      "model": "text-davinci-003",
+      "prompt": text,
+      "max_tokens": prefs.limiteToken, //datos.maxtokens,
+    };
     try {
-      final resp = await http.post(uri,
-          body: jsonEncode(data),
-          headers: {'Content-Type': 'application/json', 'x-token': token});
+      final resp = await http.post(uri, body: jsonEncode(data), headers: {
+        'Content-Type': 'application/json',
+        'x-token': await LoginBloc.getToken()
+      });
       if (resp.statusCode == 200) {
         final respuesta = jsonDecode(resp.body);
-
+        final texto = respuesta['resp'].trim();
         final chatModel = ChatModel(
             de: loginBloc.usuario!.idAssist,
             para: loginBloc.usuario!.uid,
-            tokens: 200,
-            mensaje: respuesta['resp'].trim(),
+            list: [],
+            tokens: loginBloc.state.susActive ? 0 : respuesta['tokens'],
+            mensaje: texto,
             dateTime: DateTime.now().millisecondsSinceEpoch,
-            tipo: 1);
-        loginBloc.usuario!.tokens =
-            loginBloc.usuario!.tokens! - chatModel.tokens;
+            tipo: 0);
+
+        if (loginBloc.state.susActive == false) {
+          loginBloc.usuario!.tokens =
+              loginBloc.usuario!.tokens! - chatModel.tokens;
+        }
         chats.insert(0, chatModel);
-        add(SetListChats(chats));
-        return true;
+        return chats;
       } else {
         Fluttertoast.showToast(
             msg: "Error Palabra Restringida Intente de Nuevo");
-        return false;
+
+        return chats;
       }
     } catch (e) {
       Fluttertoast.showToast(msg: "Error Intente de Nuevo");
-      return false;
-    }
-  }
 
-  Future<bool> getImagesVariation(String path) async {
-    final uri = Uri.parse(
-      "${Environment.apiUrl}/mensajes/variation",
-    );
-    final token = await storage.read(key: 'token') ?? '';
-
-    Map<String, String> headers = {"x-token": token};
-
-    try {
-      final imageUplodaRequest = http.MultipartRequest(
-        'POST',
-        uri,
-      );
-      imageUplodaRequest.headers.addAll(headers);
-      final file = await http.MultipartFile.fromPath('archivo', path);
-      imageUplodaRequest.files.add(file);
-      final streamResponse = await imageUplodaRequest.send();
-      final resp = await http.Response.fromStream(streamResponse);
-      if (resp.statusCode == 201) {
-        print(resp.body);
-        return true;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      print(e);
-      return false;
+      return chats;
     }
   }
 }

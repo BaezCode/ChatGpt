@@ -6,7 +6,9 @@ abstract class ChatEvent {}
 class SetListChats extends ChatEvent {
   final List<ChatModel> msg;
 
-  SetListChats(this.msg);
+  SetListChats(
+    this.msg,
+  );
 }
 
 class SetEscribiendo extends ChatEvent {
@@ -31,4 +33,16 @@ class SetConectado extends ChatEvent {
   final bool conectado;
 
   SetConectado(this.conectado);
+}
+
+class SetSiEscribo extends ChatEvent {
+  final bool estaEscribiendo;
+
+  SetSiEscribo(this.estaEscribiendo);
+}
+
+class SelectIndex extends ChatEvent {
+  final int indexHome;
+
+  SelectIndex(this.indexHome);
 }

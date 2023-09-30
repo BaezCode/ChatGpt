@@ -19,9 +19,9 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   FlutterSecureStorage storage = const FlutterSecureStorage();
 
-  LoginBloc() : super(LoginInitial()) {
-    on<LoginEvent>((event, emit) {
-      // TODO: implement event handler
+  LoginBloc() : super(LoginState()) {
+    on<SetSuscriptionActive>((event, emit) {
+      emit(state.copyWith(susActive: event.susActive));
     });
   }
 
@@ -32,6 +32,16 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
   Future logout() async {
     await storage.delete(key: 'token');
+  }
+
+  static Future<String> getToken() async {
+    try {
+      final storage = FlutterSecureStorage();
+      final token = await storage.read(key: 'token');
+      return token!;
+    } catch (e) {
+      return '';
+    }
   }
 
   //Login Con Google
@@ -75,8 +85,6 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           headers: {'Content-Type': 'application/json', 'x-token': token});
 
       if (resp.statusCode == 200) {
-        final loginResponse = jsonDecode(resp.body);
-        print(loginResponse);
         return true;
       } else {
         return false;
@@ -127,6 +135,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
       if (resp.statusCode == 200) {
         final respuesta = jsonDecode(resp.body);
         usuario!.tokens = respuesta['token'];
+
         return true;
       } else {
         return false;

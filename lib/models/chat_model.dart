@@ -17,6 +17,7 @@ class ChatModel {
     required this.mensaje,
     required this.dateTime,
     required this.tipo,
+    required this.list,
   });
   int? id;
   String de;
@@ -25,16 +26,17 @@ class ChatModel {
   String mensaje;
   int dateTime;
   int tipo;
+  List<dynamic> list;
 
   factory ChatModel.fromJson(Map<String, dynamic> json) => ChatModel(
-        id: json["id"],
-        de: json["de"],
-        para: json["para"],
-        tokens: json["tokens"],
-        mensaje: json["mensaje"],
-        dateTime: json["dateTime"],
-        tipo: json["tipo"],
-      );
+      id: json["id"],
+      de: json["de"],
+      para: json["para"],
+      tokens: json["tokens"],
+      mensaje: json["mensaje"],
+      dateTime: json["dateTime"],
+      tipo: json["tipo"],
+      list: List<dynamic>.from(json['list']));
 
   Map<String, dynamic> toJson() => {
         "id": id,
@@ -44,5 +46,6 @@ class ChatModel {
         "mensaje": mensaje,
         "dateTime": dateTime,
         "tipo": tipo,
+        "list": list
       };
 }

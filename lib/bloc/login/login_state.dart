@@ -1,6 +1,16 @@
 part of 'login_bloc.dart';
 
-@immutable
-abstract class LoginState {}
+class LoginState {
+  final bool susActive;
 
-class LoginInitial extends LoginState {}
+  LoginState({
+    this.susActive = false,
+  });
+
+  LoginState copyWith({
+    bool? susActive,
+  }) =>
+      LoginState(
+        susActive: susActive ?? this.susActive,
+      );
+}

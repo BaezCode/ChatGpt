@@ -4,8 +4,8 @@ part of 'pagos_bloc.dart';
 abstract class PagosEvent {}
 
 class SetCompra extends PagosEvent {
-  final int tokensAComprar;
   final String idCompra;
+  final Package? package;
 
-  SetCompra(this.tokensAComprar, this.idCompra);
+  SetCompra(this.idCompra, this.package);
 }

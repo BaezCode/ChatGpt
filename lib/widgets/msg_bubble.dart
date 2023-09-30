@@ -1,8 +1,9 @@
-import 'package:bubble/bubble.dart';
 import 'package:chat_gpt/bloc/login/login_bloc.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_share/flutter_share.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class MessageBubble extends StatelessWidget {
@@ -29,138 +30,85 @@ class MessageBubble extends StatelessWidget {
   }
 
   Widget _myMessage(context) {
-    final size = MediaQuery.of(context).size;
-
-    return Container(
-      width: double.infinity,
-      color: const Color(0xff21232A).withOpacity(0.8),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Container(
-                decoration: BoxDecoration(
-                    color: const Color(0xff21232A).withOpacity(0.5),
-                    borderRadius: BorderRadius.circular(10)),
-                width: 40,
-                child: const Icon(
-                  Icons.account_circle_rounded,
-                  color: Colors.white,
-                  size: 30,
-                )),
-            const SizedBox(
-              width: 10,
-            ),
-            SizedBox(
-              width: size.width * 0.80,
-              child: Text(
-                texto,
-                textAlign: TextAlign.start,
-                style: const TextStyle(color: Colors.white),
-              ),
-            ),
-          ],
+    return GestureDetector(
+      onTap: () async {
+        await Clipboard.setData(ClipboardData(text: texto));
+        Fluttertoast.showToast(msg: "Copied To Clipboard");
+      },
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          padding: const EdgeInsets.all(8.0),
+          margin: const EdgeInsets.only(right: 5, bottom: 5, left: 5),
+          decoration: BoxDecoration(
+              color: Colors.grey[800], borderRadius: BorderRadius.circular(10)),
+          child: Text(
+            texto,
+            style: const TextStyle(
+                color: Colors.white, fontSize: 14, fontWeight: FontWeight.w400),
+          ),
         ),
       ),
     );
   }
 
   Widget _notMyMessage(BuildContext context) {
-    final size = MediaQuery.of(context).size;
-    return Container(
-      color: const Color(0xff424549).withOpacity(0.8),
-      width: double.infinity,
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                  color: const Color(0xff21232A),
-                  borderRadius: BorderRadius.circular(10)),
-              width: 40,
-              child: Image.asset(
-                "assets/images/logo.png",
-                fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () async {
+        await Clipboard.setData(ClipboardData(text: texto));
+        Fluttertoast.showToast(msg: "Copied");
+      },
+      child: Align(
+          alignment: Alignment.centerLeft,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8.0),
+                margin: const EdgeInsets.only(right: 5, bottom: 5, left: 5),
+                decoration: BoxDecoration(
+                    color: const Color(0xfff20262e),
+                    borderRadius: BorderRadius.circular(10)),
+                child: Text(
+                  texto,
+                  style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w400),
+                ),
               ),
-            ),
-            const SizedBox(
-              width: 10,
-            ),
-            SizedBox(
-                width: size.width * 0.80,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      texto,
-                      textAlign: TextAlign.start,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      children: [
-                        IconButton(
-                            onPressed: () async {
-                              await Clipboard.setData(
-                                  ClipboardData(text: texto));
-                              Fluttertoast.showToast(msg: "Mensaje Copiado");
-                            },
-                            icon: const Icon(
-                              Icons.copy,
-                              size: 18,
-                              color: Colors.white,
-                            )),
-                        Text(
-                          "  Used $tokens Tokens",
-                          style: const TextStyle(
-                              color: Colors.white, fontSize: 13),
-                        ),
-                      ],
-                    )
-                  ],
-                )),
-          ],
-        ),
-      ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                      onPressed: () async {
+                        await Clipboard.setData(ClipboardData(text: texto));
+                        Fluttertoast.showToast(msg: "Copied");
+                      },
+                      icon: const Icon(
+                        Icons.copy,
+                        size: 20,
+                        color: Colors.white,
+                      )),
+                  IconButton(
+                      onPressed: () async {
+                        await FlutterShare.share(
+                          title: 'Share',
+                          text: texto,
+                        );
+                      },
+                      icon: const Icon(
+                        CupertinoIcons.share,
+                        size: 20,
+                        color: Colors.white,
+                      )),
+                  const SizedBox(
+                    width: 25,
+                  )
+                ],
+              ),
+            ],
+          )),
     );
-
-    /*
-    Align(
-      alignment: Alignment.centerLeft,
-      child: GestureDetector(
-        onLongPress: () async {
-          await Clipboard.setData(ClipboardData(text: texto));
-          Fluttertoast.showToast(msg: "Mensaje Copiado");
-        },
-        child: Container(
-            padding: const EdgeInsets.all(5.0),
-            margin: const EdgeInsets.only(left: 2, bottom: 5, right: 45),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Bubble(
-                  nip: BubbleNip.leftBottom,
-                  color: const Color(0xffE4E5E8),
-                  child: Text(
-                    texto,
-                    style: const TextStyle(color: Colors.black),
-                  ),
-                ),
-                const SizedBox(
-                  height: 5,
-                ),
-                Text(
-                  "  Used $tokens Tokens",
-                  style: TextStyle(color: Colors.white, fontSize: 13),
-                ),
-              ],
-            )),
-      ),
-    );
-    */
   }
 }

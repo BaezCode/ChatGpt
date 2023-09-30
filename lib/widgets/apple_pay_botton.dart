@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:flutter_gen/gen_l10n/ChatGpt-master.dart';
 
 class ApplePayButton extends StatefulWidget {
   const ApplePayButton({super.key});
@@ -24,6 +25,8 @@ class _ApplePayButtonState extends State<ApplePayButton> {
 
   @override
   Widget build(BuildContext context) {
+    final resp = AppLocalizations.of(context)!;
+
     return BlocBuilder<PagosBloc, PagosState>(
       builder: (context, state) {
         return SizedBox(
@@ -37,9 +40,9 @@ class _ApplePayButtonState extends State<ApplePayButton> {
                 minWidth: 1,
                 color: Colors.black,
                 onPressed: () => _sumit(state.idCompra, state.tokensAComprar),
-                child: const Text(
-                  'Continuar',
-                  style: TextStyle(color: Colors.white, fontSize: 18),
+                child: Text(
+                  resp.confirm,
+                  style: const TextStyle(color: Colors.white, fontSize: 18),
                 )),
           ),
         );
@@ -52,10 +55,7 @@ class _ApplePayButtonState extends State<ApplePayButton> {
       try {
         CustomWidgets.buildLoading(context);
         await Purchases.purchaseProduct(id);
-        final resp = await loginBloc.getReward(tokens);
-        if (resp && mounted) {
-          Navigator.pushReplacementNamed(context, 'thanks');
-        }
+        Navigator.pushReplacementNamed(context, 'thanks');
       } catch (e) {
         Navigator.pop(context);
         Fluttertoast.showToast(msg: "Error en la Compra");

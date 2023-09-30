@@ -14,6 +14,14 @@ class PreferenciasUsuario {
     _prefs = await SharedPreferences.getInstance();
   }
 
+  int get idChat {
+    return _prefs.getInt('idChat') ?? 0;
+  }
+
+  set idChat(int value) {
+    _prefs.setInt('idChat', value);
+  }
+
   bool get vistoImagen {
     return _prefs.getBool('vistoImagen') ?? false;
   }
@@ -31,7 +39,7 @@ class PreferenciasUsuario {
   }
 
   double get limiteToken {
-    return _prefs.getDouble('limiteToken') ?? 100;
+    return _prefs.getDouble('limiteToken') ?? 200;
   }
 
   set limiteToken(double value) {
